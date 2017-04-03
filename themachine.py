@@ -58,8 +58,12 @@ if __name__ == '__main__':
 # todo yml file per person which can be encrypted and retrieved easily
 
 # TODO
-#
-#
-#
-#
-#
+# start with no data. introduce self.
+# detect a face
+# scan known faces
+# if we have faces, check if there is a comparison. if there is, say "hi <person>".
+# else take a screenshot of the person.
+# ask their name.
+# save their face in a yaml with their name as the filename.
+# say "nice to meet you <person>".
+
