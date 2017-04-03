@@ -1,0 +1,64 @@
+apt-get install libblas-dev liblapack-dev libfreetype6-dev gfortran
+
+
+pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
+
+# Consider adding this at the end of your ~/.bashrc file
+export PATH="$PATH:/home/your_user/.local/bin"
+OSX:
+
+# Consider adding this at the end of your ~/.bash_profile file
+export PATH="$PATH:/Users/your_user/Library/Python/3.5/bin"
+
+
+# for dlib, for face_recognition
+try first
+ boostpython: sudo apt-get install libboost-all-dev
+ then: pip install packaging appdirs dlib
+https://gist.github.com/ageitgey/629d75c1baac34dfa5ca2a1928a7aeaf
+
+
+# OPENCV
+http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
+
+***GLOBALLY***
+cd ~/opencv
+mkdir release
+cd release
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
+Enter the created temporary directory (<cmake_binary_dir>) and proceed with:
+make
+sudo make install
+
+
+***VENV***
+cmake -D MAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=$VIRTUAL_ENV/local/ -D PYTHON_EXECUTABLE=$VIRTUAL_ENV/bin/python -D PYTHON_PACKAGES_PATH=$VIRTUAL_ENV/lib/python2.7/site-packages -D INSTALL_PYTHON_EXAMPLES=ON ..
+
+make -j8
+make install
+
+DEPENDENCIES:
+sudo apt-get install cmake libgtk2.0-dev pkg-config libavcodec-dev libavformat-devlibswscale-dev libamd2.2.0 libblas3gf libc6 libgcc1 libgfortran3 liblapack3gf libumfpack5.4.0 libstdc++6 build-essential gfortran libatlas-dev libatlas3-base libblas-dev liblapack-dev libjpeg-dev libpng-dev libtiff-devlibjasper-dev
+
+symlink opencv to venv
+
+$ cd ~/.virtualenvs/cv/lib/python2.7/site-packages/
+$ ln -s /usr/local/lib/python2.7/site-packages/cv2.so cv2.so
+ OR
+ ln -s /usr/local/lib/python2.7/dist-packages/cv2.so cv2.so
+
+(sometimes it's installed to dist-packages)
+
+*** SPEECH ***
+
+ pip install pocketsphinx
+
+ REQUIRES:
+    swig, download and compile:
+        $ ./configure
+        $ make
+        $ make install
+
+    sudo apt-get install libpulse-dev for pulseaudio headers on debian
+
+make sure vlc is installed
