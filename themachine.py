@@ -43,13 +43,12 @@ class Runner:
 
 
 if __name__ == '__main__':
-    folder = "./data/known/"
+    known = "./data/known/"
     init = Initialise()
-    tl, p = init.get_targets(folder)
 
     camera = Camera()
     camera.start()
-    display = Display(camera, tl, p)
+    display = Display(camera)
     Runner(display).run()
 
 # todo calculate location and identification every other frame, first location, then encoding

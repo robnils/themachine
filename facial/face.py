@@ -129,7 +129,7 @@ class Identification:
 
 class Display:
 
-    def __init__(self, camera, target_face_encoding_list, persons):
+    def __init__(self, camera, target_face_encoding_list=[], persons=[]):
         self.camera = camera
         self.frame = None
         self.face_locations = []
@@ -212,7 +212,7 @@ class Display:
         """ Grab a single frame of video """
         ret, frame = self.camera.video_capture.read()
         # Resize frame of video to half size for faster face recognition processing
-        Data.frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
+        Data.frame = cv2.resize(frame, (0, 0), fx=1.0, fy=1.0)
 
     def update(self):
         """ Display the resulting image """
@@ -232,7 +232,11 @@ class Display:
         # Loop through each face in this frame of video
         for (top, right, bottom, left), face_encoding in zip(self.face_locations, self.face_encodings):
             # See if the face is a match for the known face(s)
-            matches = face_recognition.compare_faces(self.target_face_encoding_list, face_encoding, self.TOLERANCE)
+
+            matches = []
+            if self.target_face_encoding_list:
+                matches = face_recognition.compare_faces(self.target_face_encoding_list, face_encoding, self.TOLERANCE)
+
             name, color, text_color = self.identify(matches)
 
             elem = [left, top, right, bottom, name, color, text_color]
@@ -264,3 +268,4 @@ class Camera:
         self.video_capture.set(3, self.properties['width'])
         self.video_capture.set(4, self.properties['height'])
         self.video_capture.set(12, 0.9)
+        return self
