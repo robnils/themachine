@@ -236,7 +236,7 @@ class Display:
             print("No camera input")
             return
 
-        print(Data.frame.shape)
+        # print(Data.frame.shape)
         face_locations = face_recognition.face_locations(Data.frame)
         face_encodings = face_recognition.face_encodings(Data.frame, face_locations)
         results = []
@@ -251,8 +251,8 @@ class Display:
             else:
                 speak = Speak()
                 if not speak.listening:
-                    self.talk_queue.enqueue("I don't recognise you.")
-                    self.talk_queue.enqueue("What's your name?")
+                    self.talk_queue.enqueue("I don't recognise you.", 5)
+                    self.talk_queue.enqueue("What's your name?", 5)
                 else:
                     speak.start()
 

@@ -1,4 +1,4 @@
-from datetime import time
+from time import sleep
 
 from speech.speak import Speak
 
@@ -9,5 +9,5 @@ index = 0
 while True:
     if index % 10 == 0:
         print "Still listening..."
-    time.sleep(0.1)
+    sleep(0.1)
     index += 1

@@ -4,12 +4,14 @@ import time
 import os
 import vlc
 import speech_recognition
+import pyglet
+
 from gtts import gTTS
 
 
 class Speak:
     def __init__(self):
-        self.audio = "data/tmp.file"
+        self.audio = "tmpfile.mp3"
         self.recog = speech_recognition.Recognizer()
         self.mic = speech_recognition.Microphone()
 
@@ -17,11 +19,12 @@ class Speak:
 
     def play(self):
         print "Playing..."
-        p = vlc.MediaPlayer(self.audio)
-        p.play()
-        time.sleep(0.1)
-        while p.is_playing():
-            time.sleep(0.1)
+        music = pyglet.resource.media(self.audio)
+        music.play()
+
+        #time.sleep(0.1)
+        #while p.is_playing():
+        #    time.sleep(0.1)
 
     @property
     def listening(self):
@@ -45,11 +48,11 @@ class Speak:
         print(string)
         tts = gTTS(text=string, lang='en')
 
-        print("Saving...")
+        # print("Saving...")
         Speak.remove_if_exists(self.audio)
         tts.save(self.audio)
 
-        self.play()
+        # self.play()
 
     def start(self):
         with self.mic as source:

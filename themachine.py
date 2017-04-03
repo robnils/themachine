@@ -42,6 +42,7 @@ class Runner:
                 # Release handle to the webcam
                 self.display.camera.video_capture.release()
                 cv2.destroyAllWindows()
+                self.communicate.process_cqueue = False
                 break
 
     def run(self):
@@ -50,14 +51,23 @@ class Runner:
 
 
 class Queue:
+    timeout = {}
+
     def __init__(self):
         self.items = []
 
     def isEmpty(self):
         return self.items == []
 
-    def enqueue(self, item):
-        self.items.insert(0, item)
+    def enqueue(self, item, timeout=0.0):
+
+        if item in Queue.timeout:
+            if datetime.datetime.now() >= Queue.timeout[item]:
+                self.items.insert(0, item)
+                Queue.timeout[item] = datetime.datetime.now() + datetime.timedelta(seconds=timeout)
+        else:
+            self.items.insert(0, item)
+            Queue.timeout[item] = datetime.datetime.now() + datetime.timedelta(seconds=timeout)
 
     def dequeue(self):
         return self.items.pop()
@@ -70,15 +80,17 @@ class Communicate(Thread):
     def __init__(self, queue):
         Thread.__init__(self)
         self.queue = queue
+        self.process_cqueue = True
 
     def run(self):
         speak = Speak()
         sleep(1.0)
-        while True:
+        while self.process_cqueue:
+
             if not self.queue.isEmpty():
                 string = self.queue.dequeue()
                 speak.speak(string)
-
+        print('Communication stopped')
 
 if __name__ == '__main__':
     known = "./data/known/"
