@@ -10,6 +10,7 @@ from gtts import gTTS
 
 
 class Speak:
+    response = ''
     def __init__(self):
         self.audio = "tmpfile.mp3"
         self.recog = speech_recognition.Recognizer()
@@ -28,7 +29,7 @@ class Speak:
 
     @property
     def listening(self):
-        return self.stop_listening is not None
+        return self.stop_listening is None
 
     @staticmethod
     def remove_if_exists(path):
@@ -55,6 +56,8 @@ class Speak:
         # self.play()
 
     def start(self):
+        Speak.response = ''
+        print("Listening...")
         with self.mic as source:
             self.recog.adjust_for_ambient_noise(source)  # we only need to calibrate once, before we start listening
 
@@ -64,6 +67,7 @@ class Speak:
         if self.stop_listening:
             self.stop_listening()
             self.stop_listening = None
+            print("Stopped listening")
 
     def _callback(self, recog, audio):
         """
@@ -77,6 +81,7 @@ class Speak:
             # print("Speech Recognition thinks you said '" + recognizer.recognize_sphinx(audio) + "'")
 
             audio_string = recog.recognize_sphinx(audio)
+            Speak.response = audio_string
             self.speak(audio_string)
             # print("Google Speech Recognition thinks you said " + recognizer.recognize_google(audio))
         except speech_recognition.UnknownValueError:

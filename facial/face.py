@@ -48,6 +48,18 @@ class Initialise:
     def __init__(self):
         pass
 
+    @staticmethod
+    def save(name, target_face_encoding):
+
+        #todo read first to see if enncoding exists
+        # probably need to compare too
+        data = {
+            'target_face_encoding': target_face_encoding,
+            'name': name,
+        }
+        YamlWrapper('data/known/' + name).write(data)
+
+
     def get_targets(self, folderpath):
         target_face_encoding_list = []
         persons = []
@@ -250,10 +262,13 @@ class Display:
                 matches = face_recognition.compare_faces(self.target_face_encoding_list, face_encoding, self.TOLERANCE)
             else:
                 speak = Speak()
-                if not speak.listening:
-                    self.talk_queue.enqueue("I don't recognise you.", 5)
-                    self.talk_queue.enqueue("What's your name?", 5)
+                if not speak.listening or Speak.response:
+                    self.talk_queue.enqueue("{}, is it?".format(Speak.response), 10)
+                    Initialise.save(Speak.response, face_encoding)
+                    #todo make checksum of face encoding and cache result
+
                 else:
+                    self.talk_queue.enqueue("I don't recognise you. What's your name?", 10)
                     speak.start()
 
             name, color, text_color = self.identify(matches)
