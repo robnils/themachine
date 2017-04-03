@@ -48,7 +48,7 @@ class Initialise:
     def get_targets(self, folderpath):
         target_face_encoding_list = []
         persons = []
-        data = YamlWrapper('targets.yml').read_data()
+        data = YamlWrapper('data/targets.yml').read_data()
 
         if data:
             for target in data:
