@@ -1,6 +1,7 @@
 from __future__ import unicode_literals, print_function
 
 import datetime
+import uuid
 from threading import Thread
 from time import sleep
 
@@ -11,8 +12,9 @@ from speech.speak import Speak
 
 class Runner:
 
-    def __init__(self, display):
+    def __init__(self, display, communicate):
         self.display = display
+        self.communicate = communicate
 
     def main_loop(self):
         process_this_frame = True
@@ -43,8 +45,7 @@ class Runner:
                 break
 
     def run(self):
-        t = Communicate()
-        t.start()
+        self.communicate.start()
         self.main_loop()
 
 
@@ -66,30 +67,32 @@ class Queue:
 
 
 class Communicate(Thread):
-    def __init__(self):
+    def __init__(self, queue):
         Thread.__init__(self)
-        self.talk_queue = Queue()
-        self.talk_queue.enqueue("Hi")
-        self.talk_queue.enqueue("I am the Machine.")
+        self.queue = queue
 
     def run(self):
         speak = Speak()
-        sleep(2.0)
+        sleep(1.0)
         while True:
-            if not self.talk_queue.isEmpty():
-                string = self.talk_queue.dequeue()
+            if not self.queue.isEmpty():
+                string = self.queue.dequeue()
                 speak.speak(string)
-                sleep(0.5)
 
 
 if __name__ == '__main__':
     known = "./data/known/"
     init = Initialise()
 
+    talk_queue = Queue()
+    talk_queue.enqueue("Hi")
+    talk_queue.enqueue("I am the Machine.")
+    communicate = Communicate(talk_queue)
+
     camera = Camera()
     camera.start()
-    display = Display(camera)
-    Runner(display).run()
+    display = Display(camera, talk_queue)
+    Runner(display, communicate).run()
 
 # todo calculate location and identification every other frame, first location, then encoding
 # todo delay identification a few frames

@@ -23,6 +23,10 @@ class Speak:
         while p.is_playing():
             time.sleep(0.1)
 
+    @property
+    def listening(self):
+        return self.stop_listening is not None
+
     @staticmethod
     def remove_if_exists(path):
         if os.path.exists(path):
@@ -56,6 +60,7 @@ class Speak:
     def stop(self):
         if self.stop_listening:
             self.stop_listening()
+            self.stop_listening = None
 
     def _callback(self, recog, audio):
         """

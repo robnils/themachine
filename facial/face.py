@@ -9,6 +9,9 @@ import os
 
 import yaml
 
+from speech import speak
+from speech.speak import Speak
+
 
 class Person:
     def __init__(self, name, image=None):
@@ -129,14 +132,14 @@ class Identification:
 
 class Display:
 
-    def __init__(self, camera, target_face_encoding_list=[], persons=[]):
+    def __init__(self, camera, talk_queue, target_face_encoding_list=None, persons=None):
         self.camera = camera
         self.frame = None
-        self.face_locations = []
-        self.face_encodings = []
 
-        self.target_face_encoding_list = target_face_encoding_list
-        self.persons = persons
+        self.talk_queue = talk_queue
+
+        self.target_face_encoding_list = target_face_encoding_list or []
+        self.persons = persons or []
 
         self.TOLERANCE = 0.6
 
@@ -208,6 +211,15 @@ class Display:
         fps_color = (255, 0, 0)
         cv2.putText(Data.frame, "FPS: {}".format(fps), (10, 15), font, 1.0, fps_color, 1)
 
+    def write_text(self, text):
+        font = cv2.FONT_HERSHEY_COMPLEX_SMALL
+        color = (0, 255, 0)
+        camera_width = self.camera.properties['width']
+        camera_height = self.camera.properties['height']
+        x = int(camera_width * 0.4)
+        y = int(camera_height * 0.2)
+        cv2.putText(Data.frame, text, (x, y), font, 1.0, color, 1)
+
     def handle_frame(self):
         """ Grab a single frame of video """
         ret, frame = self.camera.video_capture.read()
@@ -225,17 +237,24 @@ class Display:
             return
 
         print(Data.frame.shape)
-        self.face_locations = face_recognition.face_locations(Data.frame)
-        self.face_encodings = face_recognition.face_encodings(Data.frame, self.face_locations)
+        face_locations = face_recognition.face_locations(Data.frame)
+        face_encodings = face_recognition.face_encodings(Data.frame, face_locations)
         results = []
 
         # Loop through each face in this frame of video
-        for (top, right, bottom, left), face_encoding in zip(self.face_locations, self.face_encodings):
+        for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
             # See if the face is a match for the known face(s)
 
             matches = []
             if self.target_face_encoding_list:
                 matches = face_recognition.compare_faces(self.target_face_encoding_list, face_encoding, self.TOLERANCE)
+            else:
+                speak = Speak()
+                if not speak.listening:
+                    self.talk_queue.enqueue("I don't recognise you.")
+                    self.talk_queue.enqueue("What's your name?")
+                else:
+                    speak.start()
 
             name, color, text_color = self.identify(matches)
 
@@ -269,3 +288,4 @@ class Camera:
         self.video_capture.set(4, self.properties['height'])
         self.video_capture.set(12, 0.9)
         return self
+
