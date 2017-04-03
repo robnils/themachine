@@ -59,18 +59,20 @@ class Queue:
     def isEmpty(self):
         return self.items == []
 
-    def enqueue(self, item, timeout=0.0):
+    def timeout_reached(self, item):
+        return datetime.datetime.now() >= Queue.timeout[item]
 
-        if item in Queue.timeout:
-            if datetime.datetime.now() >= Queue.timeout[item]:
-                self.items.insert(0, item)
-                Queue.timeout[item] = datetime.datetime.now() + datetime.timedelta(seconds=timeout)
-        else:
+    def enqueue(self, item, timeout=0.0):
+        if item not in Queue.timeout or self.timeout_reached(item):
             self.items.insert(0, item)
             Queue.timeout[item] = datetime.datetime.now() + datetime.timedelta(seconds=timeout)
 
     def dequeue(self):
-        return self.items.pop()
+        elem = self.items.pop()
+        # todo need?
+        #if self.timeout_reached(elem):
+        #    Queue.timeout.pop(elem, None)
+        return elem
 
     def size(self):
         return len(self.items)
