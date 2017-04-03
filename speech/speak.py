@@ -9,7 +9,7 @@ from gtts import gTTS
 
 class Speak:
     def __init__(self):
-        self.audio = "tmp.file"
+        self.audio = "data/tmp.file"
         self.recog = speech_recognition.Recognizer()
         self.mic = speech_recognition.Microphone()
 
@@ -76,12 +76,4 @@ class Speak:
         except speech_recognition.RequestError as e:
             print("Could not request results from Speech Recognition service; {0}".format(e))
 
-s = Speak()
-s.start()
 
-index = 0
-while True:
-    if index % 10 == 0:
-        print "Still listening..."
-    time.sleep(0.1)
-    index += 1

@@ -1,8 +1,12 @@
 from __future__ import unicode_literals, print_function
 
 import datetime
+from threading import Thread
+from time import sleep
+
 import cv2
 from facial.face import Initialise, Camera, Display, Data
+from speech.speak import Speak
 
 
 class Runner:
@@ -39,7 +43,43 @@ class Runner:
                 break
 
     def run(self):
+        t = Communicate()
+        t.start()
         self.main_loop()
+
+
+class Queue:
+    def __init__(self):
+        self.items = []
+
+    def isEmpty(self):
+        return self.items == []
+
+    def enqueue(self, item):
+        self.items.insert(0, item)
+
+    def dequeue(self):
+        return self.items.pop()
+
+    def size(self):
+        return len(self.items)
+
+
+class Communicate(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+        self.talk_queue = Queue()
+        self.talk_queue.enqueue("Hi")
+        self.talk_queue.enqueue("I am the Machine.")
+
+    def run(self):
+        speak = Speak()
+        sleep(2.0)
+        while True:
+            if not self.talk_queue.isEmpty():
+                string = self.talk_queue.dequeue()
+                speak.speak(string)
+                sleep(0.5)
 
 
 if __name__ == '__main__':
