@@ -1,1 +1,3 @@
 nose
+enum==0.4.6
+PyYAML==3.12
