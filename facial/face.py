@@ -138,7 +138,7 @@ class Display:
         self.target_face_encoding_list = target_face_encoding_list
         self.persons = persons
 
-        self.TOLERANCE = 0.3
+        self.TOLERANCE = 0.6
 
     def identify(self, matches):
         name = "Unknown"
