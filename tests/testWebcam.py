@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from unittest import TestCase
 
-from face_rec import Identification, Colours
+from facial.face import Identification, Colours
 
 
 class TestWebcam(TestCase):
