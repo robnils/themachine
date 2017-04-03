@@ -9,9 +9,9 @@ import os
 
 import yaml
 
-from speech import speak
 from speech.speak import Speak
-
+import hashlib
+import bencode
 
 class Person:
     def __init__(self, name, image=None):
@@ -144,6 +144,8 @@ class Identification:
 
 class Display:
 
+    CACHE_FACES = {}
+
     def __init__(self, camera, talk_queue, target_face_encoding_list=None, persons=None):
         self.camera = camera
         self.frame = None
@@ -258,14 +260,27 @@ class Display:
             # See if the face is a match for the known face(s)
 
             matches = []
-            if self.target_face_encoding_list:
+
+            face_hash = self.hash_face(face_encoding)
+            if face_hash in Display.CACHE_FACES:
+                matches = Display.CACHE_FACES[face_hash]
+
+            elif self.target_face_encoding_list:
                 matches = face_recognition.compare_faces(self.target_face_encoding_list, face_encoding, self.TOLERANCE)
+
             else:
                 speak = Speak()
                 if not speak.listening or Speak.response:
-                    self.talk_queue.enqueue("{}, is it?".format(Speak.response), 10)
-                    Initialise.save(Speak.response, face_encoding)
-                    #todo make checksum of face encoding and cache result
+                    name = Speak.response
+                    self.talk_queue.enqueue("{}, is it?".format(name), 10)
+                    if name not in Display.CACHE_FACES:
+                        Initialise.save(name, face_encoding)
+                        face_hash = self.hash_face(face_encoding)
+
+                        Display.CACHE_FACES[face_hash] = name
+                    else:
+                        self.talk_queue.enqueue("I remember you!")
+
 
                 else:
                     self.talk_queue.enqueue("I don't recognise you. What's your name?", 10)
@@ -276,6 +291,12 @@ class Display:
             elem = [left, top, right, bottom, name, color, text_color]
             results.append(elem)
         return results
+
+    def hash_face(self, face_encoding):
+        # todo modify hashing function to give same hash for similiar input
+        # todo take diff betweem elements and use a tolerance functionn
+        hash = hashlib.md5(bencode.bencode(str(face_encoding))).hexdigest()
+        return hash
 
 
 class Data:
