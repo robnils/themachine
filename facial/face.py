@@ -140,6 +140,9 @@ class Display:
 
         self.TOLERANCE = 0.6
 
+        self.current = None
+        self.previous = None
+
     def identify(self, matches):
         name = "Unknown"
         color = (0, 0, 200)
@@ -224,11 +227,28 @@ class Display:
             print("No camera input")
             return
 
-        print(Data.frame.shape)
+        #print(Data.frame.shape)
         self.face_locations = face_recognition.face_locations(Data.frame)
         self.face_encodings = face_recognition.face_encodings(Data.frame, self.face_locations)
         results = []
+        #print(self.face_locations)
 
+        # print(self.face_encodings[0].shape)
+        # print(str(self.face_encodings[0]))
+        if self.face_encodings and len(self.face_encodings) > 0:
+            face = self.face_encodings[0]
+
+            self.previous = self.current
+            self.current = face
+
+            if self.previous is None:
+                self.previous = self.current
+            diff = self.current - self.previous
+
+            if all(diff) < 5.0:
+                print("Rob")
+            else:
+                print("Not rob")
         # Loop through each face in this frame of video
         for (top, right, bottom, left), face_encoding in zip(self.face_locations, self.face_encodings):
             # See if the face is a match for the known face(s)
