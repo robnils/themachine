@@ -6,4 +6,4 @@ pyttsx==1.1
 requests==2.13.0
 SpeechRecognition==3.6.3
 python-vlc
-nose
+pyglqet==1.2.4
