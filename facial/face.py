@@ -9,9 +9,11 @@ import os
 
 import yaml
 
+from log import logger
 from speech.speak import Speak
 import hashlib
-import bencode
+
+
 
 class Person:
     def __init__(self, name, image=None):
@@ -27,8 +29,8 @@ class YamlWrapper:
     def read_data(self):
         try:
             with open(self.filename) as f:
-                print('Reading: {}...'.format(self.filename), end='')
-                print("Done!")
+                logger.info('Reading: {}...'.format(self.filename), end='')
+                logger.info("Done!")
                 data = yaml.load(f)
                 if data:
                     return data
@@ -38,9 +40,9 @@ class YamlWrapper:
 
     def write(self, data):
         with open(self.filename, 'w') as outfile:
-            print('Saving: {}...'.format(self.filename), end='')
+            logger.info('Saving: {}...'.format(self.filename), end='')
             yaml.dump(data, outfile, default_flow_style=False)
-        print("Done!")
+        logger.info("Done!")
 
 
 class Initialise:
@@ -58,7 +60,6 @@ class Initialise:
             'name': name,
         }
         YamlWrapper('data/known/' + name).write(data)
-
 
     def get_targets(self, folderpath):
         target_face_encoding_list = []
@@ -238,7 +239,7 @@ class Display:
         """ Grab a single frame of video """
         ret, frame = self.camera.video_capture.read()
         # Resize frame of video to half size for faster face recognition processing
-        Data.frame = cv2.resize(frame, (0, 0), fx=1.0, fy=1.0)
+        Data.frame = cv2.resize(frame, (0, 0), fx=1.0, fy=1.0)  # todo fix
 
     def update(self):
         """ Display the resulting image """
@@ -261,7 +262,7 @@ class Display:
 
             matches = []
 
-            face_hash = self.hash_face(face_encoding)
+            face_hash = Display.hash_face(face_encoding)
             if face_hash in Display.CACHE_FACES:
                 matches = Display.CACHE_FACES[face_hash]
 
@@ -275,7 +276,7 @@ class Display:
                     self.talk_queue.enqueue("{}, is it?".format(name), 10)
                     if name not in Display.CACHE_FACES:
                         Initialise.save(name, face_encoding)
-                        face_hash = self.hash_face(face_encoding)
+                        face_hash = Display.hash_face(face_encoding)
 
                         Display.CACHE_FACES[face_hash] = name
                     else:
@@ -291,11 +292,13 @@ class Display:
             elem = [left, top, right, bottom, name, color, text_color]
             results.append(elem)
         return results
-
-    def hash_face(self, face_encoding):
+    
+    @staticmethod
+    def hash_face(face_encoding):
         # todo modify hashing function to give same hash for similiar input
         # todo take diff betweem elements and use a tolerance functionn
-        hash = hashlib.md5(bencode.bencode(str(face_encoding))).hexdigest()
+        face_encoding_bytes = str(face_encoding).encode()
+        hash = hashlib.md5(face_encoding_bytes).hexdigest()
         return hash
 
 
@@ -318,7 +321,7 @@ class Camera:
         }
 
     def start(self):
-        print("Starting camera with properties: {}".format(self.properties))
+        logger.info("Starting camera with properties: {}".format(self.properties))
         self.video_capture = cv2.VideoCapture(0)
         self.video_capture.set(3, self.properties['width'])
         self.video_capture.set(4, self.properties['height'])

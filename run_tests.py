@@ -9,6 +9,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 folders = ("tests",)
 paths = [os.path.join(dir_path, f) for f in folders]
 
+FAST_TESTS = True
+
 def run_tests():
     all_tests = ()
     for path in paths:
