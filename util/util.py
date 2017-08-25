@@ -61,12 +61,12 @@ class DatabaseAccessor:
         res = self.cursor.execute("select * from faces")
         r = res.fetchall()
         for x in r:
-            print x
+            print(x)
 
 db = DatabaseAccessor()
 
 face_encoding = [random.uniform(-20.0, 20.0) for i in range(0, 3)]
 db.save_face("test", face_encoding)
 
-print db.show_data()
+print(db.show_data())
 
