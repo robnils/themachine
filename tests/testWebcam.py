@@ -7,6 +7,7 @@ import numpy
 
 from facial.face import Identification, Colours, Camera, Display
 from run_tests import FAST_TESTS
+from speech.speak import Speak
 
 
 class TestWebcam(TestCase):
@@ -48,6 +49,17 @@ class TestWebcam(TestCase):
                                         , 0.02712629, 0.03805835])
         face_hash = Display.hash_face(face_encoding)
         self.assertEquals(face_hash, '955f89fdbb761e3192406b546c62ea3b')
+
+
+    def test_audio_works(self):
+        Speak()
+
+
+
+
+
+
+
 
 
 

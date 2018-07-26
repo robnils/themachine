@@ -49,6 +49,9 @@ $ ln -s /usr/local/lib/python2.7/site-packages/cv2.so cv2.so
 
 (sometimes it's installed to dist-packages)
 
+
+
+
 *** SPEECH ***
 
  pip install pocketsphinx
@@ -62,3 +65,7 @@ $ ln -s /usr/local/lib/python2.7/site-packages/cv2.so cv2.so
     sudo apt-get install libpulse-dev for pulseaudio headers on debian
 
 make sure vlc is installed
+
+for MAC:
+
+brew install portaudio first

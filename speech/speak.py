@@ -8,6 +8,8 @@ import pyglet
 
 from gtts import gTTS
 
+from log import logger
+
 
 class Speak:
     response = ''
@@ -19,7 +21,7 @@ class Speak:
         self.stop_listening = None
 
     def play(self):
-        print "Playing..."
+        logger.info("Playing...")
         music = pyglet.resource.media(self.audio)
         music.play()
 
